@@ -1,5 +1,7 @@
 package com.zaurtregulov.spring.security.configuration;
 
+import javax.sql.DataSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -12,14 +14,20 @@ import org.springframework.security.core.userdetails.User.UserBuilder;
 @EnableWebSecurity
 public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 
+  @Autowired
+  DataSource dataSource;
+
   @Override
   protected void configure(AuthenticationManagerBuilder auth) throws Exception {
     UserBuilder userBuilder = User.withDefaultPasswordEncoder();
 
-    auth.inMemoryAuthentication()
-        .withUser(userBuilder.username("zaur").password("zaur").roles("EMPLOYEE"))
-        .withUser(userBuilder.username("elena").password("elena").roles("HR"))
-        .withUser(userBuilder.username("ivan").password("ivan").roles("MANAGER", "HR"));
+    //информация о юзерах и ролях находится в базе данных, поэтому текст ниже комментирую
+    auth.jdbcAuthentication().dataSource(dataSource);
+
+//    auth.inMemoryAuthentication()
+//        .withUser(userBuilder.username("zaur").password("zaur").roles("EMPLOYEE"))
+//        .withUser(userBuilder.username("elena").password("elena").roles("HR"))
+//        .withUser(userBuilder.username("ivan").password("ivan").roles("MANAGER", "HR"));
   }
 
   //присвоение ролям доступа для входа по адресу
